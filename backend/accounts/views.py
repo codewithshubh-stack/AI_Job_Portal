@@ -36,9 +36,11 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             try:
-                send_verification_email(user)
+                import threading
+                t = threading.Thread(target=send_verification_email, args=(user,))
+                t.start()
             except Exception as e:
-                print(f"Email send failed: {e}")
+                print(f"Email thread failed to start: {e}")
             return Response(
                 {'user': UserSerializer(user, context={'request': request}).data,
                  'detail': 'Account registered. Please verify your email to log in.'},
@@ -91,9 +93,11 @@ class PasswordResetRequestView(APIView):
             user = User.objects.filter(email=email).first()
             if user:
                 try:
-                    send_password_reset_email(user)
+                    import threading
+                    t = threading.Thread(target=send_password_reset_email, args=(user,))
+                    t.start()
                 except Exception as e:
-                    print(f"Email send failed: {e}")
+                    print(f"Email thread failed to start: {e}")
             return Response({'detail': 'If a matching account exists, reset instructions have been sent.'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
