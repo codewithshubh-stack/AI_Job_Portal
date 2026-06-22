@@ -1,0 +1,27 @@
+# Python configuration
+backend/venv/
+backend/.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+*.sqlite3
+backend/media/
+
+# Node configuration
+frontend/node_modules/
+frontend/dist/
+.eslintcache
+
+# System & IDE configuration
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+.gemini/
