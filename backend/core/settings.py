@@ -71,6 +71,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
 # Database
+import urllib.parse
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -81,6 +83,20 @@ DATABASES = {
         'PORT': config('DB_PORT', default='5432'),
     }
 }
+
+# Parse DATABASE_URL if provided (common in cloud databases like Render)
+database_url = config('DATABASE_URL', default=None)
+if database_url:
+    urllib.parse.uses_netloc.append("postgres")
+    url = urllib.parse.urlparse(database_url)
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': url.path[1:],
+        'USER': url.username,
+        'PASSWORD': url.password,
+        'HOST': url.hostname,
+        'PORT': url.port or 5432,
+    }
 
 # Graceful fallback to SQLite if PostgreSQL is unavailable or during tests
 if 'test' in sys.argv:
