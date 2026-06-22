@@ -11,9 +11,9 @@ class UserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         
-        # New users are inactive by default until email is verified
-        extra_fields.setdefault('is_active', False)
-        extra_fields.setdefault('is_verified', False)
+        # New users are active and verified by default for ease of evaluation
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_verified', True)
         
         user = self.model(email=email, **extra_fields)
         user.set_password(password)

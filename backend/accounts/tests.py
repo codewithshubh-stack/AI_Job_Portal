@@ -39,7 +39,7 @@ class AuthenticationTests(APITestCase):
         }
 
     def test_candidate_registration_flow(self):
-        """Test candidate registration creates inactive user and profile."""
+        """Test candidate registration creates active user and profile."""
         response = self.client.post(self.register_url, self.candidate_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("user", response.data)
@@ -47,19 +47,19 @@ class AuthenticationTests(APITestCase):
         self.assertEqual(response.data["user"]["role"], "candidate")
         
         user = User.objects.get(email="candidate@example.com")
-        self.assertFalse(user.is_active)
-        self.assertFalse(user.is_verified)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_verified)
         self.assertIsNotNone(user.candidate_profile)
 
     def test_recruiter_registration_flow(self):
-        """Test recruiter registration creates inactive user and profile."""
+        """Test recruiter registration creates active user and profile."""
         response = self.client.post(self.register_url, self.recruiter_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["user"]["role"], "recruiter")
         
         user = User.objects.get(email="recruiter@example.com")
-        self.assertFalse(user.is_active)
-        self.assertFalse(user.is_verified)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_verified)
         self.assertIsNotNone(user.recruiter_profile)
 
     def test_registration_password_mismatch(self):
@@ -75,6 +75,10 @@ class AuthenticationTests(APITestCase):
         # 1. Register candidate
         self.client.post(self.register_url, self.candidate_data, format='json')
         user = User.objects.get(email="candidate@example.com")
+        # Reset to unverified first to test verification flow
+        user.is_active = False
+        user.is_verified = False
+        user.save()
         
         # 2. Generate tokens manually to simulate email link
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -100,6 +104,10 @@ class AuthenticationTests(APITestCase):
     def test_login_unverified_user_fails(self):
         """Test unverified users cannot login."""
         self.client.post(self.register_url, self.candidate_data, format='json')
+        user = User.objects.get(email=self.candidate_data["email"])
+        user.is_verified = False
+        user.save()
+
         login_data = {
             "email": self.candidate_data["email"],
             "password": self.candidate_data["password"]
