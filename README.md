@@ -1,5 +1,7 @@
 # TalentAI - AI-Powered Job Portal
 
+🔗 **Live Demo Link**: [https://ai-job-portal-faghmgy38-shubh19.vercel.app](https://ai-job-portal-faghmgy38-shubh19.vercel.app)
+
 TalentAI is a production-grade, MNC-level portfolio project built using **Django REST Framework (DRF)**, **React (Vite)**, **PostgreSQL**, **JWT Authentication**, and **Tailwind CSS**. It incorporates advanced AI features, real-time in-app notifications, a three-way theme selector, candidate portfolio scorecards, and a resilient external job board indexer.
 
 ---
