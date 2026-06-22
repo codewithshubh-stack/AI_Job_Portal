@@ -21,8 +21,11 @@ RUN pip install --no-cache-dir gunicorn
 # Copy project files
 COPY backend/ /app/
 
+# Make entrypoint script executable
+RUN chmod +x /app/entrypoint.sh
+
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn server
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120"]
+# Run entrypoint script
+CMD ["/app/entrypoint.sh"]
